@@ -9,7 +9,7 @@ module.exports = function(app, mongoose) {
 
     router.post('/', function(req, res) {
         console.log(req.body);
-        
+
         var poll = new Poll();
         poll.title = req.body.title;
         poll.owner = 'Junicus';
@@ -29,8 +29,8 @@ module.exports = function(app, mongoose) {
     });
 
     router.get('/:poll_id', function(req, res) {
-        var poll_id = req.params['poll_id'];
-        if (typeof poll_id == 'numeric' && !isNan(poll_id)) {
+        var poll_id = req.params.poll_id;
+        if (typeof Number(poll_id) === 'number' && !isNaN(poll_id)) {
             res.send('Should get single poll with id: ' + poll_id);
         } else {
             res.send('there is an error, poll_id should be numeric and is ' + typeof (poll_id));
