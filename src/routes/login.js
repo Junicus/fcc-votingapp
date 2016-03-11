@@ -3,11 +3,11 @@ module.exports = function(app) {
     var router = express.Router();
 
     router.get('/', function(req, res) {
-        res.render('pages/index');
+        res.send('show login window');
     });
 
-    router.get('/about', function(req, res) {
-        res.send('about page w/Test: ' + app.get('env'));
+    router.post('/', function(req, res) {
+        res.send('process login form');
     });
 
     return router;

@@ -1,10 +1,17 @@
-module.exports = function(app, mongoose) {
+module.exports = function(app) {
     var express = require('express');
     var router = express.Router();
     var Poll = require('../models/poll');
 
     router.get('/', function(req, res) {
-        res.send('Hello World from polls, should return polls: ' + req.body);
+        Poll.find(function(err, polls) {
+            if (err) {
+                res.status(500);
+                res.send(err);
+            }
+
+            res.json(polls);
+        })
     });
 
     router.post('/', function(req, res) {
@@ -17,28 +24,57 @@ module.exports = function(app, mongoose) {
 
         console.log('poll: ', poll);
 
-        bear.save(function(err) {
+        poll.save(function(err) {
             if (err) {
                 console.log('Error in saving post on db: ' + err);
                 res.status(500);
                 res.send(err);
             }
 
-            res.json({ message: 'Poll Created' });
+            res.json({ message: 'Poll Created', poll: poll });
         });
     });
 
     router.get('/:poll_id', function(req, res) {
-        var poll_id = req.params.poll_id;
-        if (typeof Number(poll_id) === 'number' && !isNaN(poll_id)) {
-            res.send('Should get single poll with id: ' + poll_id);
-        } else {
-            res.send('there is an error, poll_id should be numeric and is ' + typeof (poll_id));
-        }
+        Poll.findById(req.params.poll_id, function(err, poll) {
+            if (err) {
+                res.status(404);
+                res.send(err);
+            } else {
+                res.json(poll);
+            }
+        });
+    });
+
+    router.put('/:poll_id', function(req, res) {
+        Poll.findById(req.params.poll_id, function(err, poll) {
+            poll.title = req.body.title;
+            poll.options = req.body.options;
+            poll.closed = req.body.closed;
+
+            poll.save(function(err) {
+                if (err) {
+                    res.status(500);
+                    res.send(err);
+                } else {
+                    res.json({ message: 'Poll Updated!', poll: poll });
+                }
+            })
+        });
+        res.send('ok');
     });
 
     router.delete('/:poll_id', function(req, res) {
-        res.send('Should delete single poll with id: ' + req.params["poll_id"]);
+        Poll.remove({
+            _id: req.params.poll_id
+        }, function(err, poll) {
+            if (err) {
+                res.status(500);
+                res.send(err);
+            } else {
+                res.json({ message: 'Successfully deleted!', poll: poll });
+            }
+        });
     });
 
     return router;
