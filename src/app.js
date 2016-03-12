@@ -1,91 +1,69 @@
 var express = require('express');
 var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var morgan = require('morgan'); 1
-var jwt = require('jsonwebtoken');
+var passport = require('passport');
+var expressSession = require('express-session');
 var config = require('./config/config');
+var mongoose = require('mongoose');
+var engine = require('ejs-locals');
+var routes = require('./routes/index')(passport);
+var apiPolls = require('./routes/api/polls')(app);
+
+mongoose.connect(config.database);
 
 var app = express();
 
-var MongoDB = mongoose.connect(config.database).connection;
-
-MongoDB.on('error', function(err) {
-    console.log('Database error: ' + err.message);
-});
-
-MongoDB.on('open', function() {
-    console.log('Connected to database');
-});
-
-var routes = require('./routes/index')(app);
-var polls = require('./routes/polls')(app);
-var login = require('./routes/login')(app);
-var users = require('./routes/users')(app);
-var authenticate = require('./routes/authenticate')(app);
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-app.set('views', path.join(__dirname, '../views'));
+app.set('views', path.join(__dirname, 'views'));
+app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 
-app.set('superSecret', config.secret);
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(expressSession({secret: 'testSecret' }));
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use(morgan('dev'));
-/*app.use(function(req, res, next) {
-    console.log({
-        method: req.method,
-        url: req.url
-    });
-    next();
-});*/
+var flash = require('connect-flash');
+app.use(flash());
 
-app.get('/setup', function(req, res) {
-    var nick = new User({
-        name: 'Junicus',
-        password: 'p@ssword',
-        admin: true
-    });
+var initPassport = require('./passport/init');
+initPassport(passport);
 
-    nick.save(function(err) {
-        if (err) throw err;
-
-        console.log('User saved successfully');
-        res.json({ success: true });
-    })
-});
 
 app.use('/', routes);
-app.use('/api/polls', polls);
-app.use('/login', login);
-app.use('/users', users);
-app.use('/authenticate', authenticate);
+app.use('/api/polls', apiPolls);
 
 app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('pages/error', {
-            message: err.message,
-            error: err
-        });
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
     });
+  });
 }
 
 app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('pages/error', {
-        message: err.message,
-        error: {}
-    });
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
 });
 
 module.exports = app;

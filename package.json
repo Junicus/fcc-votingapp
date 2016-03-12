@@ -4,8 +4,7 @@
   "description": "FCC Voting App Challenge",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node ./bin/www"
   },
   "repository": {
     "type": "git",
@@ -21,11 +20,19 @@
   "author": "Junicus",
   "license": "ISC",
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.0",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.1",
+    "debug": "^2.2.0",
     "ejs": "^2.4.1",
+    "ejs-locals": "^1.0.2",
     "express": "^4.13.4",
-    "jsonwebtoken": "^5.7.0",
-    "mongoose": "^4.4.6",
-    "morgan": "^1.7.0"
+    "express-session": "^1.13.0",
+    "mongoose": "^4.4.7",
+    "morgan": "^1.7.0",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "serve-favicon": "^2.3.0"
   }
 }
