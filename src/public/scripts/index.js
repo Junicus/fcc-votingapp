@@ -4,7 +4,15 @@ $('document').ready(function() {
     console.log('got polls', polls);
     polls.map(function(poll, i) {
       console.log('poll #' + i + ': ', poll);
-      $('#pollCollection').append('<li>' + poll + '</li>');
+      var item = $('<li />');
+
+      $('<a />', {
+        class: 'collection-item',
+        href: '/poll/' + poll._id,
+        text: poll.title
+      }).appendTo(item);
+
+      item.appendTo('#pollCollection');
     });
   });
 });

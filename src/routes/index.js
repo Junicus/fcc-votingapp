@@ -16,7 +16,11 @@ module.exports = function(passport) {
     });
   });
 
-  router.get('/login', passport.authenticate('login', {
+  router.get('/login', function(req, res) {
+    res.render('login');
+  });
+
+  router.post('/auth/login', passport.authenticate('login', {
     sucessRedirect: '/',
     failureRedirect: '/',
     failureFlash: true
@@ -28,7 +32,7 @@ module.exports = function(passport) {
     });
   });
 
-  router.post('/signup', passport.authenticate('signup', {
+  router.post('/auth/signup', passport.authenticate('signup', {
     successRedirect: '/',
     failureRedirect: '/signup',
     failureFlash: true
