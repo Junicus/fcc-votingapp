@@ -36,3 +36,5 @@ jspm_packages
 .vscode
 typings
 src/public/lib
+src/public/scripts/auth0.js
+src/passport/authConfig.js
