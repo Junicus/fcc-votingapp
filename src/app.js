@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
+var strategy = require('./passport/setup-passport');
 var expressSession = require('express-session');
 var config = require('./config/config');
 var mongoose = require('mongoose');
@@ -29,16 +30,16 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(expressSession({secret: 'testSecret' }));
+app.use(expressSession({
+  secret: 'testSecret',
+  resave: false,
+  saveUninitialized: false
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
 var flash = require('connect-flash');
 app.use(flash());
-
-var initPassport = require('./passport/init');
-initPassport(passport);
-
 
 app.use('/', routes);
 app.use('/polls', polls);

@@ -16,32 +16,16 @@ module.exports = function(passport) {
     });
   });
 
-  router.get('/login', function(req, res) {
-    res.render('login');
-  });
-
-  router.post('/auth/login', passport.authenticate('login', {
-    sucessRedirect: '/',
-    failureRedirect: '/',
-    failureFlash: true
-  }));
-
-  router.get('/signup', function(req, res) {
-    res.render('register', {
-      message: req.flash('message')
+  router.get('/callback',
+    passport.authenticate('auth0', {
+      failureRedirect: '/'
+    }),
+    function(req, res) {
+      if (!req.user) {
+        throw new Error('user null');
+      }
+      res.redirect('/');
     });
-  });
-
-  router.post('/auth/signup', passport.authenticate('signup', {
-    successRedirect: '/',
-    failureRedirect: '/signup',
-    failureFlash: true
-  }));
-
-  router.get('/signout', function(req, res) {
-    req.logout();
-    res.redirect('/');
-  });
 
   return router;
 };
