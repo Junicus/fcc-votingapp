@@ -8,7 +8,7 @@ $('document').ready(function() {
 
       $('<a />', {
         class: 'collection-item',
-        href: '/poll/' + poll._id,
+        href: '/polls/' + poll._id,
         text: poll.title
       }).appendTo(item);
 

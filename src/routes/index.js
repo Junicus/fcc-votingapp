@@ -1,14 +1,14 @@
-var express = require('express');
-var router = express.Router();
-
-var isAuthenticated = function(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect('/');
-};
-
 module.exports = function(passport) {
+  var express = require('express');
+  var router = express.Router();
+
+  var isAuthenticated = function(req, res, next) {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    res.redirect('/');
+  };
+
   router.get('/', function(req, res) {
     res.render('index', {
       title: 'Voting App',

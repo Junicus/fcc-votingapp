@@ -10,6 +10,7 @@ var config = require('./config/config');
 var mongoose = require('mongoose');
 var engine = require('ejs-locals');
 var routes = require('./routes/index')(passport);
+var polls = require('./routes/polls')(passport);
 var apiPolls = require('./routes/api/polls')(app);
 
 mongoose.connect(config.database);
@@ -40,6 +41,7 @@ initPassport(passport);
 
 
 app.use('/', routes);
+app.use('/polls', polls);
 app.use('/api/polls', apiPolls);
 
 app.use(function(req, res, next) {
